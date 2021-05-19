@@ -10,7 +10,7 @@ class NMMethod:
     def __init__(self):
         self.simplexHistory = []
 
-    def runAlgorithm(self, goalFunction: str, P: List[List[float]], alfa: float, beta: float, gamma: float,
+    def runAlgorithm(self, goalFunction: str, maxIterations: int, P: List[List[float]], alfa: float, beta: float, gamma: float,
                      epsilon: float) -> List[List[float]]:
 
         n = self.evaluateFunctionDimension(goalFunction)
@@ -21,16 +21,15 @@ class NMMethod:
                 raise Exception(f"{i}-th simplex point has wrong dimension")
         if len(P) != (n + 1):
             raise Exception("Not enough starting points")
-        iterations = 0
-        while True:
-            iterations += 1
+
+        for currentIteration in range(maxIterations):
             self.simplexHistory.append(P)
             if self.stopCriterion(goalFunction, P, epsilon):
-                print(iterations)
+                print(currentIteration + 1)
                 break
 
             F = self.evaluateAllPoints(goalFunction, P)
-            h, l = self.get_l_and_h(F)
+            l, h = self.get_l_and_h(F)
             P_prim, P_star, P_sstar, P_ssstar = self.getAllP(n, P, h, alfa, beta, gamma)
             Fs = f(goalFunction, P_prim)  # useless?
             Fo = f(goalFunction, P_star)
