@@ -8,7 +8,9 @@ from typing import List
 
 class NMMethod:
     def __init__(self):
-        self.simplexHistory = []
+        self.simplexPointsHistory = []
+        self.simplexAverageValueHistory = []
+        self.goalFunction = None
 
     def runAlgorithm(self, goalFunction: str, maxIterations: int, P: List[List[float]], alfa: float, beta: float, gamma: float,
                      epsilon: float) -> List[List[float]]:
@@ -23,7 +25,10 @@ class NMMethod:
             raise Exception("Not enough starting points")
 
         for currentIteration in range(maxIterations):
-            self.simplexHistory.append(P)
+
+            self.simplexPointsHistory.append(P.copy())
+            self.simplexAverageValueHistory.append(float(np.mean(self.evaluateAllPoints(goalFunction, P))))
+
             if self.stopCriterion(goalFunction, P, epsilon):
                 print(currentIteration + 1)
                 break
@@ -63,7 +68,12 @@ class NMMethod:
                     elif Fo < F[i]:
                         P[h] = P_star
                         break
+        self.goalFunction = goalFunction
         return P
+
+    def visualise(self):
+        if self.goalFunction is not None:
+            visual(self.goalFunction, self.simplexPointsHistory, self.simplexAverageValueHistory)
 
     # STANDARD DEVIATION OF Fi
     def stopCriterion(self, function: str, P: List[List[float]], epsilon: float) -> bool:
@@ -129,3 +139,54 @@ class NMMethod:
             distance += 1 / numberOfPoints * sum(
                 [(P[i][j] - P[i][j - 1]) ** 2 for j in range(dimensionOfPoints)]) ** 0.5
         return distance
+
+
+# from another project # TOTAL MESS!!!!
+def visual(fun: str, x, y, sf: float = 25, layers: int = 20):
+
+    plt.plot(range(1, len(y) + 1), y)
+    plt.xlabel("Iteration")
+    plt.ylabel("goal function value")
+    plt.show()
+
+    if len(x[0][0]) != 2:
+        return 0
+
+    allPoints = []
+    for x1 in x:
+        for x2 in x1:
+            for x3 in x2:
+                allPoints.append(abs(x3))
+
+    dx = max(allPoints) + 1
+    samples = int(dx * sf)
+    xlist = np.linspace(-dx, dx, samples)
+    ylist = np.linspace(-dx, dx, samples)
+    X, Y = np.meshgrid(xlist, ylist)
+    Z = np.zeros((len(xlist), len(ylist)))
+    print("Generating contourf plot...")
+    for i in range(len(xlist)):
+        for j in range(len(ylist)):
+            Z[i, j] = f(fun, [ylist[j], xlist[i]])
+    fig, ax = plt.subplots()
+    cp = ax.contourf(X, Y, Z, layers)  # draw layers
+    fig.colorbar(cp)
+
+    for x1 in x:
+
+        to_draw = [x1[-1]]
+
+        for x2 in x1:
+            to_draw.append(x2)
+        xaxis = []
+        yaxis = []
+        for xd in to_draw:
+            xaxis.append(xd[0])
+            yaxis.append(xd[1])
+
+        ax.plot(xaxis, yaxis)
+
+    ax.set_xlim(-dx, dx)
+    ax.set_ylim(-dx, dx)
+
+    plt.show()
