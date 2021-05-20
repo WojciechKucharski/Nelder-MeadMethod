@@ -26,14 +26,16 @@ class NMMethod:
 
         for currentIteration in range(maxIterations):
 
+            F = self.evaluateAllPoints(goalFunction, P)
+
+            self.simplexAverageValueHistory.append(float(np.mean(F)))
             self.simplexPointsHistory.append(P.copy())
-            self.simplexAverageValueHistory.append(float(np.mean(self.evaluateAllPoints(goalFunction, P))))
 
             if self.stopCriterion(goalFunction, P, epsilon):
                 print(currentIteration + 1)
                 break
 
-            F = self.evaluateAllPoints(goalFunction, P)
+
             l, h = self.get_l_and_h(F)
             P_prim, P_star, P_sstar, P_ssstar = self.getAllP(n, P, h, alfa, beta, gamma)
             Fs = f(goalFunction, P_prim)  # useless?
