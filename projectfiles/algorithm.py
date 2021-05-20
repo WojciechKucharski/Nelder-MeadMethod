@@ -35,7 +35,6 @@ class NMMethod:
                 print(currentIteration + 1)
                 break
 
-
             l, h = self.get_l_and_h(F)
             P_prim, P_star, P_sstar, P_ssstar = self.getAllP(n, P, h, alfa, beta, gamma)
             Fs = f(goalFunction, P_prim)  # useless?
