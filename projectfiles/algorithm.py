@@ -1,7 +1,5 @@
 from my_parser import f
-from functools import cache
 import numpy as np
-import math
 import matplotlib.pyplot as plt
 from typing import List
 
@@ -12,11 +10,12 @@ class NMMethod:
         self.simplexAverageValueHistory = []
         self.goalFunction = None
 
-    def runAlgorithm(self, goalFunction: str, maxIterations: int, P: List[List[float]], alfa: float, beta: float, gamma: float,
+    def runAlgorithm(self, goalFunction: str, maxIterations: int, P: List[List[float]], alfa: float, beta: float,
+                     gamma: float,
                      epsilon: float) -> List[List[float]]:
 
         n = self.evaluateFunctionDimension(goalFunction)
-        d = self.evaluateAverageDistance(P) # useless?
+        d = self.evaluateAverageDistance(P)  # useless?
 
         for i, Pi in enumerate(P):
             if len(Pi) != n:
@@ -144,7 +143,6 @@ class NMMethod:
 
 # from another project # TOTAL MESS!!!!
 def visual(fun: str, x, y, sf: float = 25, layers: int = 20):
-
     plt.plot(range(1, len(y) + 1), y)
     plt.xlabel("Iteration")
     plt.ylabel("goal function value")
